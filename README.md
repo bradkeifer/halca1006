@@ -1,4 +1,4 @@
-# hal_ca1006
+# halca1006
 
 This module provides support for the HAL CA1006 protocol.
 It is intended to provide a device driver capability to allow integration of HAL CA1006 multi-zone
@@ -10,13 +10,13 @@ It can also be run in a standalone mode in order to test connectivity and protoc
 Run the following to install:
 
 ```python
-pip install hal_ca1006
+pip install halca1006
 ```
 
 ## Usage
 
 ```python
-from hal_ca1006 import HALProtocol
+from halca1006 import HALProtocol
 
 # TODO: Add function examples - see if this can be self documenting from the code?
 ```
