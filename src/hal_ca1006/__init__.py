@@ -5,4 +5,4 @@ __version__ = '0.0.1'
 __build__ = 0x000100
 __author__ = 'Brad Keifer'
 
-from HAL_CA1006.hal import (HALProtocol)
+from hal_ca1006.hal import (HALProtocol)
