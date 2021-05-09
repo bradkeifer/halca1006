@@ -1,4 +1,4 @@
-# HAL-CA1006
+# HAL_CA1006
 
 This module provides support for the HAL CA1006 protocol
 
@@ -7,13 +7,13 @@ This module provides support for the HAL CA1006 protocol
 Run the following to install:
 
 ```python
-pip install HAL-CA1006
+pip install HAL_CA1006
 ```
 
 ## Usage
 
 ```python
-from hal import HALProtocol
+from HAL_CA1006 import HALProtocol
 
-# TODO: Add function examples
+# TODO: Add function examples - see if this can be self documenting from the code?
 ```
