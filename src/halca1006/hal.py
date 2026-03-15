@@ -163,7 +163,7 @@ LOGGING_LEVEL = {
 }
 
 
-class HALProtocol(object):
+class HALProtocol(object):  # pylint: disable=too-many-instance-attributes
     """HAL CA1006 protocol class
 
     This is the main class for communication with a HAL CA1006
@@ -354,7 +354,6 @@ class HALProtocol(object):
     def _flush_input_buffer(self):
         """Flush any and all data in the input buffer"""
         self._read_input_buffer()
-        return None
 
     def _read_input_buffer(self):
         """Read and return the input buffer"""
@@ -401,8 +400,6 @@ class HALProtocol(object):
         if self._msg_errors >= MAX_MSG_ERRORS:
             self._sock.close()
             self._reconnect()
-
-        return None
 
     def _find_signature(self, data_stream, msg_signature):
         """Takes the stream of bytes received and looks for a
@@ -557,7 +554,7 @@ class HALProtocol(object):
         self._easy_log(HAL_LOG_ERROR, "turn_off() Failure.")
         return False
 
-    def set_node_status(self, zone, power, source, volume, mute):
+    def set_node_status(self, zone, power, source, volume, mute):  # pylint: disable=too-many-arguments, too-many-positional-arguments
         """Generic node status change"""
 
         z = int(zone)
