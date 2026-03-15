@@ -755,6 +755,22 @@ class HALProtocol(object):
 
         return self._version
 
+    def _get_am6_status(self):
+        """Get status for entire device 
+
+        Useful for resetting a blocked zone.
+        Response signature is not checked
+        """
+        self._easy_log(HAL_LOG_DEBUG,
+                       '_get_am6_status()')
+        send_msg = GET_AM6_STATUS
+        send_msg += HAL_EOL
+
+        rcv_msg = self._txrx(send_msg)
+
+        self._easy_log(HAL_LOG_DEBUG,
+                       f'_get_node_status():{self._name}: Bytes read: {rcv_msg}')
+        
     def _get_node_status(self, zone):
         """ Get node status for the zone """
 
@@ -780,8 +796,9 @@ class HALProtocol(object):
                            f'_get_node_status():{self._name}: Status is {status}.')
         else:
             self._easy_log(HAL_LOG_ERROR,
-                           f'_get_node_status():{self._name}: Failure :-(.')
+                           f'_get_node_status():{self._name}: Failure :-(. Will attempt recovery.')
             status = HAL_UNKNOWN
+            self._get_am6_status()  # This can sometimes reset a blocked zone
         
         self._node_status[int(zone)] = status
         return status
