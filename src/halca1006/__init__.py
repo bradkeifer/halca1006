@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+"""HAL CA1006 Communications module"""
+
 __title__ = 'HAL CA1006 Communications'
 __version__ = '0.0.3'
 __build__ = 0x000100
