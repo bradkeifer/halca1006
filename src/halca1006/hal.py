@@ -62,7 +62,7 @@ import time
 from threading import Lock
 
 if platform.system() == 'Windows':
-    EAGAIN = errno.WSAEWOULDBLOCK
+    EAGAIN = errno.WSAEWOULDBLOCK # type: ignore
 else:
     EAGAIN = errno.EAGAIN
 
@@ -252,7 +252,7 @@ class HALProtocol(object):
                 self._reconnect()
                 return b''
             except:
-                self._easy_log(HAL_LOG_ERROR,f'Unexpected Error on recv.')
+                self._easy_log(HAL_LOG_ERROR,'Unexpected Error on recv.')
                 raise
             
         self._easy_log(HAL_LOG_ERROR,
@@ -265,7 +265,7 @@ class HALProtocol(object):
         if not buf.endswith(HAL_EOL):
             self._easy_log(HAL_LOG_WARNING,
                            f'_sock_send():{self._name}: buffer ({buf}) does not '
-                           f'end with EOL byte ({HAL_EOL}). '
+                           f'end with EOL byte ({HAL_EOL!r}). '
                            f'It will be added.')
             buf += HAL_EOL
         for i in range(MAX_RECONNECTS):
@@ -293,7 +293,7 @@ class HALProtocol(object):
                 self._reconnect()
                 return 0
             except:
-                self._easy_log(HAL_LOG_ERROR,f'Unexpected Error on send.')
+                self._easy_log(HAL_LOG_ERROR,'Unexpected Error on send.')
                 raise
                 
         self._easy_log(HAL_LOG_ERROR,
@@ -305,7 +305,7 @@ class HALProtocol(object):
 
     def _reconnect(self):
         if self._sock is None:
-            return RTS_ERR_NO_CONN
+            return HAL_ERR_NO_CONN
         
         self.disconnect()        
         c = self._sock.connect((self._host, self._port))
@@ -467,7 +467,7 @@ class HALProtocol(object):
             return HAL_ERR_NO_CONN
 
         self._easy_log(HAL_LOG_DEBUG,
-                       f'disconnect(): Disconnecting.')
+                       'disconnect(): Disconnecting.')
         return self._sock.close()
         
     def is_connected(self):
@@ -475,7 +475,7 @@ class HALProtocol(object):
 
         try:  # Will throw an exception if sock is not connected hence the try catch.
             return self._sock.getpeername() != ''
-        except:
+        except OSError:
             return False
         return False
 
@@ -519,15 +519,15 @@ class HALProtocol(object):
 
     def turn_off(self):
         """Turn off all zones."""
-        self._easy_log(HAL_LOG_DEBUG, f'turn_off() called.')
+        self._easy_log(HAL_LOG_DEBUG, 'turn_off() called.')
         send_msg = SET_SYSTEM_PWR_SAVE
         send_msg += HAL_EOL
         rcv_msg = self._txrx(send_msg)
         i = self._find_signature(rcv_msg, HAL_SUCCESS_MSG[SET_SYSTEM_PWR_SAVE])
         if i != -1:
-            self._easy_log(HAL_LOG_DEBUG, f'turn_off() Success.')
+            self._easy_log(HAL_LOG_DEBUG, 'turn_off() Success.')
             return True
-        self._easy_log(HAL_LOG_ERROR, f'turn_off() Failure.')
+        self._easy_log(HAL_LOG_ERROR, 'turn_off() Failure.')
         return False
         
     def set_node_status(self, zone, power, source, volume, mute):
@@ -941,28 +941,28 @@ if __name__ == "__main__":
     
     while True:
         cmd = '0'
-        print(f'Test commands:\n'
-              f'0: Exit\t'
-              f'1: Connect\t'
-              f'2: Is connected?\n'
-              f'3: Set Power\t'
-              f'4: Set Volume\t'
-              f'5: Set Source\t'
-              f'6: All on/off\n'
-              f'7: Toggle Mute\t'
-              f'8: Get Zone Info\t'
-              f'9: Get Power\n'
-              f'10: Get Source\t'
-              f'11: Get Volume\t'
-              f'12: Get Mute\n'
-              f'13: Set Echo\t'
-              f'14: Get Version\t'
-              f'15: Set Node Status\n'
-              f'16: Get Node Status\t'
-              f'17: Set Select Interval\t'
-              f'18: Get Select Interval\n'
-              f'20: Show all\t'
-              f'21: Get all\n')
+        print('Test commands:\n'
+              '0: Exit\t'
+              '1: Connect\t'
+              '2: Is connected?\n'
+              '3: Set Power\t'
+              '4: Set Volume\t'
+              '5: Set Source\t'
+              '6: All on/off\n'
+              '7: Toggle Mute\t'
+              '8: Get Zone Info\t'
+              '9: Get Power\n'
+              '10: Get Source\t'
+              '11: Get Volume\t'
+              '12: Get Mute\n'
+              '13: Set Echo\t'
+              '14: Get Version\t'
+              '15: Set Node Status\n'
+              '16: Get Node Status\t'
+              '17: Set Select Interval\t'
+              '18: Get Select Interval\n'
+              '20: Show all\t'
+              '21: Get all\n')
         cmd = input('Enter command you would like to test: ')
         if cmd == '1':
             logger.info('OK. Connecting..')
@@ -972,7 +972,7 @@ if __name__ == "__main__":
             if hal.is_connected():
                 print(f'Yes, we are connected via socket {s}.\n')
             else:
-                print(f'No, we are not connected.\n')
+                print('No, we are not connected.\n')
         elif cmd == '3':
             logger.info('Set Power Test')
             zone = input('Enter zone [1-6]: ')
@@ -993,9 +993,10 @@ if __name__ == "__main__":
             power = input('Enter Power mode 0=Off, 1=On: ')
             hal.all_on_off(power)
         elif cmd == '7':
-            logger.info('Toggle Mute test')
+            logger.info('Mute test')
             zone = input('Enter zone [1-6]: ')
-            hal.set_mute(zone)
+            mute = input('Enter 1 to mute. 0 to unmute')
+            hal.set_mute(zone, mute)
         elif cmd == '8':
             logger.info('Get Zone Info Test')
             zone = input('Enter zone [1-6]: ')
