@@ -163,7 +163,7 @@ LOGGING_LEVEL = {
 }
 
 
-class HALProtocol(object):  # pylint: disable=too-many-instance-attributes
+class HALProtocol(object):  # pylint: disable=too-many-instance-attributes, too-many-public-methods
     """HAL CA1006 protocol class
 
     This is the main class for communication with a HAL CA1006
@@ -505,8 +505,10 @@ class HALProtocol(object):  # pylint: disable=too-many-instance-attributes
         return self._sock
 
     def ping(self):
-        """Ping the amp."""
-        return None
+        """Ping the amp.
+        
+        Does nothing. Not yet implemented
+        """
 
     def loop_misc(self):
         """Handles general ongoing housekeeping duties for the HAL connections.
@@ -605,11 +607,10 @@ class HALProtocol(object):  # pylint: disable=too-many-instance-attributes
             self._mute[z] = attrs[5]
             self._easy_log(HAL_LOG_DEBUG, f"set_node_status():{self._name}: Success!.")
             return True
-        else:
-            self._easy_log(
-                HAL_LOG_ERROR, f"set_node_status():{self._name}: Failure :-(."
-            )
-            return False
+        self._easy_log(
+            HAL_LOG_ERROR, f"set_node_status():{self._name}: Failure :-(."
+        )
+        return False
 
     def set_power(self, zone, power):
         """Switch power on/off to a zone
@@ -636,9 +637,8 @@ class HALProtocol(object):  # pylint: disable=too-many-instance-attributes
             self._power[int(zone)] = power
             self._easy_log(HAL_LOG_DEBUG, f"set_power():{self._name}: Success!.")
             return True
-        else:
-            self._easy_log(HAL_LOG_ERROR, f"set_power():{self._name}: Failure :-(.")
-            return False
+        self._easy_log(HAL_LOG_ERROR, f"set_power():{self._name}: Failure :-(.")
+        return False
 
     def set_volume(self, zone, volume):
         """Set volume for zone to specific value.
@@ -666,9 +666,8 @@ class HALProtocol(object):  # pylint: disable=too-many-instance-attributes
             self._volume[int(zone)] = volume
             self._easy_log(HAL_LOG_DEBUG, f"set_volume():{self._name}: Success!.")
             return True
-        else:
-            self._easy_log(HAL_LOG_ERROR, f"set_volume():{self._name}: Failure :-(.")
-            return False
+        self._easy_log(HAL_LOG_ERROR, f"set_volume():{self._name}: Failure :-(.")
+        return False
 
     def set_source(self, zone, source):
         """Set source for a zone"""
@@ -694,9 +693,8 @@ class HALProtocol(object):  # pylint: disable=too-many-instance-attributes
             self._source[int(zone)] = source
             self._easy_log(HAL_LOG_DEBUG, f"set_source():{self._name}: Success!.")
             return True
-        else:
-            self._easy_log(HAL_LOG_ERROR, f"set_source():{self._name}: Failure :-(.")
-            return False
+        self._easy_log(HAL_LOG_ERROR, f"set_source():{self._name}: Failure :-(.")
+        return False
 
     def all_on_off(self, power):
         """Turn all zones on or off
@@ -726,9 +724,8 @@ class HALProtocol(object):  # pylint: disable=too-many-instance-attributes
                 self._power[i] = power
             self._easy_log(HAL_LOG_DEBUG, f"all_on_off():{self._name}: Success!.")
             return True
-        else:
-            self._easy_log(HAL_LOG_ERROR, f"all_on_off():{self._name}: Failure :-(.")
-            return False
+        self._easy_log(HAL_LOG_ERROR, f"all_on_off():{self._name}: Failure :-(.")
+        return False
 
     def set_mute(self, zone, mute):
         """Switch mute on/off to a zone
@@ -754,9 +751,8 @@ class HALProtocol(object):  # pylint: disable=too-many-instance-attributes
             self._mute[int(zone)] = mute_str
             self._easy_log(HAL_LOG_DEBUG, f"set_mute():{self._name}: Success!.")
             return True
-        else:
-            self._easy_log(HAL_LOG_ERROR, f"set_mute():{self._name}: Failure :-(.")
-            return False
+        self._easy_log(HAL_LOG_ERROR, f"set_mute():{self._name}: Failure :-(.")
+        return False
 
     def _get_version(self):
         """Get HAL CA1006 firmware version"""
@@ -902,9 +898,8 @@ class HALProtocol(object):  # pylint: disable=too-many-instance-attributes
                 HAL_LOG_DEBUG, f"get_zone_info():{self._name}: Mute ({mute})."
             )
             return True
-        else:
-            self._easy_log(HAL_LOG_ERROR, f"get_zone_info():{self._name}: Failure :-(.")
-            return False
+        self._easy_log(HAL_LOG_ERROR, f"get_zone_info():{self._name}: Failure :-(.")
+        return False
 
     def get_power(self, zone):
         """Get power info for the zone"""
