@@ -163,7 +163,7 @@ LOGGING_LEVEL = {
 }
 
 
-class HALProtocol(object):  # pylint: disable=too-many-instance-attributes, too-many-public-methods
+class HALProtocol:  # pylint: disable=too-many-instance-attributes, too-many-public-methods
     """HAL CA1006 protocol class
 
     This is the main class for communication with a HAL CA1006
@@ -519,8 +519,6 @@ class HALProtocol(object):  # pylint: disable=too-many-instance-attributes, too-
         if time.time() - self._last_tx_t > PING_PERIOD:
             self._easy_log(HAL_LOG_DEBUG, f"loop_misc():{self._name}: Time for a ping!")
             self.ping()
-
-        return None
 
     def get_select_interval(self):
         """Return the select interval used to wait for all data to be returned by the HAL."""
