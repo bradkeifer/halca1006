@@ -113,8 +113,8 @@ HAL_SUCCESS_MSG = {
     ECHO_OFF: "ECHO OFF",
     ECHO_ON: "ECHO ON",
     HELP: "HELP",
-    INTERCOM_DISABLE: "INTERCOM DISABLE",
-    INTERCOM_ENABLE: "INTERCOM ENABLE",
+    INTERCOM_DISABLE: "EXITED INTERCOM MODE",
+    INTERCOM_ENABLE: "INTERCOM EXECUTING\n\rINTERCOM EXECUTED",
     SET_NODE_MUTE: b"MUTE SENDING - PLEASE WAIT\n\rMUTE SEND COMPLETE",
     GET_NODE_STATUS: b"SCAN COMPLETE",
     SET_NODE_PARTY_MODE: "SET PARTY MODE",
@@ -197,6 +197,7 @@ class HALProtocol:  # pylint: disable=too-many-instance-attributes, too-many-pub
         self._lock = Lock()
         self._select_interval = HAL_SELECT_INTERVAL
         self._version = HAL_UNKNOWN
+        self._intercom_enabled:bool | None = None
         for i in range(1, HAL_ZONES + 1):
             self._power[i] = HAL_UNKNOWN
             self._source[i] = HAL_UNKNOWN
@@ -552,6 +553,43 @@ class HALProtocol:  # pylint: disable=too-many-instance-attributes, too-many-pub
             self._easy_log(HAL_LOG_DEBUG, "turn_off() Success.")
             return True
         self._easy_log(HAL_LOG_ERROR, "turn_off() Failure.")
+        return False
+
+    def intercom_enable(self):
+        """Enable Intercom Interrupt.
+
+        Prepares the HAL to play an intercom message. If a source is currently active, 
+        it is deactivated whilst in intercom interrupt mode. The only command which
+        will be recognised whilst in intercom interrupt mode is intercom_disable().
+        """
+        self._easy_log(HAL_LOG_DEBUG, "intercom_enable() called.")
+        send_msg = INTERCOM_ENABLE
+        send_msg += HAL_EOL
+        rcv_msg = self._txrx(send_msg)
+        i = self._find_signature(rcv_msg, HAL_SUCCESS_MSG[INTERCOM_ENABLE])
+        if i != -1:
+            self._intercom_enabled = True
+            self._easy_log(HAL_LOG_DEBUG, "intercom_enable() Success.")
+            return True
+        self._easy_log(HAL_LOG_ERROR, "intercom_enable() Failure.")
+        return False
+
+    def intercom_disble(self):
+        """Disable Intercom Interrupt.
+
+        Returns all outputs HAL to state they were in before the intercom
+        interrupt was enabled.
+        """
+        self._easy_log(HAL_LOG_DEBUG, "intercom_disable() called.")
+        send_msg = INTERCOM_DISABLE
+        send_msg += HAL_EOL
+        rcv_msg = self._txrx(send_msg)
+        i = self._find_signature(rcv_msg, HAL_SUCCESS_MSG[INTERCOM_DISABLE])
+        if i != -1:
+            self._intercom_enabled = False
+            self._easy_log(HAL_LOG_DEBUG, "intercom_disable() Success.")
+            return True
+        self._easy_log(HAL_LOG_ERROR, "intercom_disable() Failure.")
         return False
 
     def set_node_status(self, zone, power, source, volume, mute):  # pylint: disable=too-many-arguments, too-many-positional-arguments
