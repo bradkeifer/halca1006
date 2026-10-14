@@ -571,10 +571,10 @@ class HALProtocol:  # pylint: disable=too-many-instance-attributes, too-many-pub
             self._intercom_enabled = True
             self._easy_log(HAL_LOG_DEBUG, "intercom_enable() Success.")
             return True
-        self._easy_log(HAL_LOG_ERROR, "intercom_enable() Failure.")
+        self._easy_log(HAL_LOG_ERROR, "intercom_enable() Failure for %s.", self._name)
         return False
 
-    def intercom_disble(self):
+    def intercom_disable(self):
         """Disable Intercom Interrupt.
 
         Returns all outputs HAL to state they were in before the intercom
