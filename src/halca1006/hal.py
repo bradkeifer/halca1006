@@ -113,8 +113,12 @@ HAL_SUCCESS_MSG = {
     ECHO_OFF: "ECHO OFF",
     ECHO_ON: "ECHO ON",
     HELP: "HELP",
-    INTERCOM_DISABLE: b"EXITED INTERCOM MODE",
-    INTERCOM_ENABLE: b"INTERCOM EXECUTING\n\rINTERCOM EXECUTED",
+    # Unfortunately, there is disparity in the Intercom Enable/Disable replies depending
+    # upon the firmware version. The only common reply is an 'I' in the replies.
+    # INTERCOM_DISABLE: b"EXITED INTERCOM MODE",
+    # INTERCOM_ENABLE: b"INTERCOM EXECUTING\n\rINTERCOM EXECUTED",
+    INTERCOM_DISABLE: b"I",
+    INTERCOM_ENABLE: b"I",
     SET_NODE_MUTE: b"MUTE SENDING - PLEASE WAIT\n\rMUTE SEND COMPLETE",
     GET_NODE_STATUS: b"SCAN COMPLETE",
     SET_NODE_PARTY_MODE: "SET PARTY MODE",
@@ -595,6 +599,13 @@ class HALProtocol:  # pylint: disable=too-many-instance-attributes, too-many-pub
     def set_node_status(self, zone, power, source, volume, mute):  # pylint: disable=too-many-arguments, too-many-positional-arguments
         """Generic node status change"""
 
+        if self._intercom_enabled is True:
+            self._easy_log(HAL_LOG_WARNING,
+                           "set_node_status:Unable to set node status due "
+                           "to intercom enabled state for %s.",
+                           self._name
+                           )
+            return False
         z = int(zone)
         vol = str(int(volume) * HAL_MAX_VOL // 100)
         self._easy_log(
@@ -878,6 +889,13 @@ class HALProtocol:  # pylint: disable=too-many-instance-attributes, too-many-pub
     def get_node_status(self, zone):
         """Get node status for the zone"""
 
+        if self._intercom_enabled is True:
+            self._easy_log(HAL_LOG_WARNING,
+                           "get_node_status:Unable to get node status due "
+                           "to intercom enabled state for %s.", 
+                           self._name
+                           )
+            return
         self._easy_log(HAL_LOG_DEBUG, f"get_node_status():{self._name}: zone {zone}.")
         return self._node_status[int(zone)]
 
