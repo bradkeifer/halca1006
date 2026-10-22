@@ -51,15 +51,14 @@
 # ZI: Transmit IR Code of the Nodes' selected source :- ZI <ADDR> <KEY>
 
 
-import logging
-import logging.handlers
 import argparse
 import errno
-import socket
+import logging
 import select
+import socket
 import sys
-import time
 from threading import Lock
+import time
 
 
 # HAL CA1006 Protocol Commands
@@ -201,7 +200,7 @@ class HALProtocol:  # pylint: disable=too-many-instance-attributes, too-many-pub
         self._lock = Lock()
         self._select_interval = HAL_SELECT_INTERVAL
         self._version = HAL_UNKNOWN
-        self._intercom_enabled:bool | None = None
+        self._intercom_enabled = False
         for i in range(1, HAL_ZONES + 1):
             self._power[i] = HAL_UNKNOWN
             self._source[i] = HAL_UNKNOWN
@@ -469,7 +468,7 @@ class HALProtocol:  # pylint: disable=too-many-instance-attributes, too-many-pub
             self._set_echo("0")  # Turn off echo to be safe
             self._get_version()
             return True
-        except socket.error as msg:
+        except OSError as msg:
             self._easy_log(
                 HAL_LOG_DEBUG,
                 f"connect():{self._name}: Socket connect call threw exception. "
@@ -852,6 +851,12 @@ class HALProtocol:  # pylint: disable=too-many-instance-attributes, too-many-pub
     def _get_node_status(self, zone):
         """Get node status for the zone"""
 
+        if self._intercom_enabled is True:
+            self._easy_log(HAL_LOG_DEBUG,
+                           "%s is in INTERCOM ENABLE mode. Assuming no change of status.",
+                           self._name)
+            return self._node_status[int(zone)]
+
         self._easy_log(HAL_LOG_DEBUG, f"_get_node_status():{self._name}: zone {zone}.")
         send_msg = GET_NODE_STATUS
         send_msg += zone.encode()
@@ -889,13 +894,6 @@ class HALProtocol:  # pylint: disable=too-many-instance-attributes, too-many-pub
     def get_node_status(self, zone):
         """Get node status for the zone"""
 
-        if self._intercom_enabled is True:
-            self._easy_log(HAL_LOG_WARNING,
-                           "get_node_status:Unable to get node status due "
-                           "to intercom enabled state for %s.", 
-                           self._name
-                           )
-            return
         self._easy_log(HAL_LOG_DEBUG, f"get_node_status():{self._name}: zone {zone}.")
         return self._node_status[int(zone)]
 
