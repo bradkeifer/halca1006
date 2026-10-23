@@ -1,6 +1,25 @@
 [build-system]
 requires = [
-    "setuptools>=42",
+    "setuptools >= 77.0.3",
     "wheel"
 ]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "halca1006"
+authors = [
+    {name = "Brad Keifer", email = "bradkeifer@icloud.com"},
+]
+description = "Protocol support for the HAL CA1006 multi-zone amplifier"
+readme = "README.md"
+requires-python = ">=3.12"
+keywords = ["HAL CA1006", "HAL Lifestyle"]
+licence = "GPL-3.0-or-later"
+classifiers = [
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3"
+]
+dynamic = ["version"]
+
+[tool.setuptools.dynamic]
+version = {attr = "halca1006.__version__"}
